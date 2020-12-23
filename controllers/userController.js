@@ -1,12 +1,16 @@
 import {userSchema} from '../models/user';
+import {propertySchema} from '../models/property'
 import {registerValidation,loginValidation} from '../validation';
 import mongoose from 'mongoose';
 
 import jwt, { verify } from 'jsonwebtoken';
+import { verifyToken } from '../validate-token';
 
 require('dotenv').config();
 
 const User = mongoose.model('User',userSchema);
+
+const Property = mongoose.model('Property',propertySchema);
 
 export const userSignUp = async (req,res) =>{
 
@@ -85,5 +89,26 @@ export const userLogOut = (req,res) =>{
       res.clearCookie('auth');
       res.sendStatus(200);
   });
+  })
+}
+
+export const deleteUser = (req,res) =>{
+  verifyToken(req,res,(Token) =>{
+    Property.deleteMany({ownerID : Token}).then(function(){
+      console.log('Data Deleted');
+    }).catch(function(err){
+      console.log(err);
+    });
+    User.findByToken(req.cookies.auth,(err,user) =>{
+      if(err) throw err
+      user.deleteToken(req.cookies.token,async (err,user)=>{
+        if(err) return res.status(400).send(err);
+        User.findOneAndDelete(Token,(err,data) =>{
+          if(err) return res.status(400).send(err);
+          res.clearCookie('auth');
+          res.sendStatus(200);
+        });
+      });
+    })
   })
 }

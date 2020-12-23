@@ -1,6 +1,6 @@
 import {getProperties,getPropertyById,registerProperty,deleteProperty,updatePropertyInformation} from '../controllers/propertyController';
 
-import {userSignUp,userLogIn,userLogOut} from '../controllers/userController';
+import {userSignUp,userLogIn,userLogOut,deleteUser} from '../controllers/userController';
 
 
 export const Routes = (app) => {
@@ -17,4 +17,5 @@ export const Routes = (app) => {
   app.route('/api/user/signup').post(userSignUp);
   app.route('/api/user/signin').post(userLogIn);
   app.route('/api/user/signout').get(userLogOut);
+  app.route('/api/user/delete').delete(deleteUser);
 }
